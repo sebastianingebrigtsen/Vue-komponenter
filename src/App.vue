@@ -3,10 +3,25 @@ import { ref } from 'vue';
 import BaseButton from './components/BaseButton.vue';
 import BaseInput from './components/BaseInput.vue';
 import DataView from './components/DataView.vue';
+import BaseModal from './components/BaseModal.vue';
 import { dummyItems } from './data/dummyData';
 
+const isModalOpen = ref(false);
+const modalTitle = ref('');
+const modalMessage = ref('');
+const modalMode = ref<'info' | 'delete' | 'edit'>('info'); // Styrer innhold i modalen
+const activeItem = ref<{ name: string } | null>(null);
+const editValue = ref('');
+
+function showModal(title: string, message: string, mode: 'info' | 'delete' | 'edit' = 'info') {
+  modalTitle.value = title;
+  modalMessage.value = message;
+  modalMode.value = mode;
+  isModalOpen.value = true;
+}
+
 function clickTest() {
-  alert('Knappen er trykket på!');
+  showModal('Knapp trykket', 'Knappen ble trykket på!');
 }
 
 // Uavhengige tilstander for hver av input-testene slik at de fungerer hver for seg
@@ -18,16 +33,45 @@ const lazyValue = ref('');
 const customCssValue = ref('');
 
 function handleSearch() {
-  alert(`Søker etter: ${buttonValue.value}`);
+  showModal('Søk uført', `Søker etter: ${buttonValue.value}`);
 }
 const items = ref(dummyItems);
 
 function handleEdit(item: { name: string }) {
-  alert(`Redigerer: ${item.name}`);
+  activeItem.value = item;
+  editValue.value = item.name;
+  showModal('Rediger element', `Hva vil du endre navnet på "${item.name}" til?`, 'edit');
+}
+
+function confirmEdit() {
+  if (activeItem.value && editValue.value) {
+    const itemName = activeItem.value.name;
+    const newValue = editValue.value;
+    activeItem.value = null; // Resetter før vi kaller "info"-modalen
+    showModal('Lagret', `Endret navnet på "${itemName}" til "${newValue}" (Simulert)`, 'info');
+  } else {
+    isModalOpen.value = false;
+  }
 }
 
 function handleDelete(item: { name: string }) {
-  alert(`Sletter: ${item.name}`);
+  activeItem.value = item;
+  showModal('Bekreft sletting', `Er du sikker på at du vil slette "${item.name}"?`, 'delete');
+}
+
+function confirmDelete() {
+  if (activeItem.value) {
+    const itemName = activeItem.value.name;
+    activeItem.value = null;
+    showModal('Slettet', `Slettet: "${itemName}" (Simulert)`, 'info');
+  } else {
+    isModalOpen.value = false;
+  }
+}
+
+function cancelModal() {
+  activeItem.value = null;
+  isModalOpen.value = false;
 }
 </script>
 
@@ -47,7 +91,7 @@ function handleDelete(item: { name: string }) {
       <div class="button-group">
         <BaseButton label="Lagre" @click="clickTest" />
         <BaseButton label="Avbryt" variant="secondary" />
-        <BaseButton label="Slett" variant="danger" iconBefore="🗑" />
+        <BaseButton label="Slett" variant="danger" iconBefore="🗑" @click="handleDelete({ name: 'Demo-element' })" />
         <BaseButton label="BK" href="https://bk.no/tjenestekategorier/teknologi" iconAfter="↗" />
         <BaseButton label="Deaktivert" disabled />
         <BaseButton label="Egendefinert stil" customClass="orange-button" />
@@ -118,6 +162,37 @@ function handleDelete(item: { name: string }) {
 
       <DataView :items="items" itemClass="custom-item" @edit="handleEdit" @delete="handleDelete" />
     </section>
+    <BaseModal 
+      :isOpen="isModalOpen" 
+      :title="modalTitle" 
+      @close="cancelModal"
+    >
+      <p>{{ modalMessage }}</p>
+
+      <!-- Viser input for redigering i selve modalen -->
+      <div v-if="modalMode === 'edit'" style="margin-top: 1rem;">
+        <BaseInput v-model="editValue" placeholder="Nytt navn..." />
+      </div>
+
+      <!-- Bruker footer-slot for egendefinerte knapper avhengig av modus -->
+      <template #footer v-if="modalMode !== 'info'">
+        <BaseButton label="Avbryt" variant="secondary" @click="cancelModal" />
+        
+        <BaseButton 
+          v-if="modalMode === 'delete'" 
+          label="Slett" 
+          variant="danger" 
+          iconBefore="🗑" 
+          @click="confirmDelete" 
+        />
+        
+        <BaseButton 
+          v-if="modalMode === 'edit'" 
+          label="Lagre" 
+          @click="confirmEdit" 
+        />
+      </template>
+    </BaseModal>
   </main>
 </template>
 
