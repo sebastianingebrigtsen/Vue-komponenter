@@ -139,38 +139,37 @@ function selectNone() {
       </article>
     </div>
 
-    <!--
-      Tabell-visning brukes når viewMode er satt til table.
-    -->
-    <table v-else class="data-table">
-      <thead>
-        <tr>
-          <th>Velg</th>
-          <th>Bilde</th>
-          <th>Navn</th>
-          <th>Beskrivelse</th>
-          <th>Handlinger</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="item in filteredItems" :key="item.id" :class="itemClass">
-          <td>
-            <input type="checkbox" :checked="selectedIds.includes(item.id)" @change="toggleSelect(item.id)" />
-          </td>
-          <td>
-            <img :src="item.image" :alt="item.name" class="data-table-image" />
-          </td>
-          <td>{{ item.name }}</td>
-          <td>{{ item.description }}</td>
-          <td>
-            <div class="data-card-actions">
-              <BaseButton label="Rediger" variant="secondary" @click="handleEdit(item)" />
-              <BaseButton label="Slett" variant="danger" @click="handleDelete(item)" />
-            </div>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <div v-else class="table-container">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Velg</th>
+            <th>Bilde</th>
+            <th>Navn</th>
+            <th>Beskrivelse</th>
+            <th>Handlinger</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="item in filteredItems" :key="item.id" :class="itemClass">
+            <td>
+              <input type="checkbox" :checked="selectedIds.includes(item.id)" @change="toggleSelect(item.id)" />
+            </td>
+            <td>
+              <img :src="item.image" :alt="item.name" class="data-table-image" />
+            </td>
+            <td>{{ item.name }}</td>
+            <td>{{ item.description }}</td>
+            <td>
+              <div class="data-card-actions">
+                <BaseButton label="Rediger" variant="secondary" @click="handleEdit(item)" />
+                <BaseButton label="Slett" variant="danger" @click="handleDelete(item)" />
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
     <!--
       Vises når ingen elementer matcher søket.
@@ -184,6 +183,14 @@ function selectNone() {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+}
+
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
 }
 
 .data-view-top {
