@@ -24,7 +24,7 @@ function handleClose() {
     <div class="modal-content" role="dialog" aria-modal="true">
       <header class="modal-header">
         <h3 class="modal-title">{{ title }}</h3>
-        <button class="close-button" @click="handleClose" aria-label="Lukk">×</button>
+        <BaseButton iconBefore="×" customClass="close-button" @click="handleClose" />
       </header>
       
       <div class="modal-body">
@@ -81,15 +81,13 @@ function handleClose() {
 
 .close-button {
   background: transparent;
-  border: none;
-  font-size: 24px;
-  line-height: 1;
   color: #6b7280;
-  cursor: pointer;
   padding: 0;
+  font-size: 24px;
 }
 
 .close-button:hover {
+  background: transparent;
   color: #111827;
 }
 
