@@ -9,11 +9,16 @@ function clickTest() {
   alert('Knappen er trykket på!');
 }
 
-const inputValue = ref('');
+// Uavhengige tilstander for hver av input-testene slik at de fungerer hver for seg
+const basicValue = ref('');
+const iconValue = ref('');
+const prefixSuffixValue = ref('');
+const buttonValue = ref('');
 const lazyValue = ref('');
+const customCssValue = ref('');
 
 function handleSearch() {
-  alert(`Søker etter: ${inputValue.value}`);
+  alert(`Søker etter: ${buttonValue.value}`);
 }
 const items = ref(dummyItems);
 
@@ -28,10 +33,16 @@ function handleDelete(item: { name: string }) {
 
 <template>
   <main>
-    <h1>Vue Komponenter</h1>
-    <!--Knappe komponent-->
+      <h1>Vue Komponenter</h1>
+    <!-- 
+      Test-seksjon for Knappe-komponenten.
+      Viser frem ulike tilstander og funksjoner som ikoner, lenker og deaktivering.
+    -->
     <section class="demo-section">
-      <h2>Button test</h2>
+      <div class="section-header">
+        <h2>Button</h2>
+        <p>Støtter ulike varianter, ikoner, lenker og deaktivert tilstand.</p>
+      </div>
 
       <div class="button-group">
         <BaseButton label="Lagre" @click="clickTest" />
@@ -39,77 +50,177 @@ function handleDelete(item: { name: string }) {
         <BaseButton label="Slett" variant="danger" iconBefore="🗑" />
         <BaseButton label="BK" href="https://bk.no/tjenestekategorier/teknologi" iconAfter="↗" />
         <BaseButton label="Deaktivert" disabled />
-        <BaseButton label="Egendefinert stil" customClass="big-button" />
+        <BaseButton label="Egendefinert stil" customClass="orange-button" />
       </div>
     </section>
 
-    <!--Input komponent-->
+    <!-- 
+      Test-seksjon for Input-komponenten.
+      Hver boks representerer et spesifikt krav fra oppgaveteksten og har sin egen v-model.
+    -->
     <section class="demo-section">
-      <h2>Input test</h2>
-
-      <div class="input-group">
-        <BaseInput v-model="inputValue" placeholder="Vanlig input" />
-        <BaseInput v-model="inputValue" placeholder="Nettside" suffix=".no" />
-        <BaseInput v-model="inputValue" placeholder="Søk" iconBefore="🔍" buttonLabel="Søk" @buttonClick="handleSearch" />
-        <BaseInput v-model="lazyValue" placeholder="Lazy update" updateMode="lazy" />
+      <div class="section-header">
+        <h2>Input</h2>
+        <p>Fleksibelt tekstfelt med støtte for ikoner, pre-/suffix, integrert knapp og lazy update.</p>
       </div>
 
-      <p>Vanlig verdi: {{ inputValue }}</p>
-      <p>Lazy verdi: {{ lazyValue }}</p>
+      <div class="input-demo-grid">
+        <div class="input-demo-item">
+          <!-- Her bindes verdien direkte og oppdateres på hvert tastetrykk (eager update ved utelatt updateMode-prop) -->
+          <label>1. Standard input</label>
+          <BaseInput v-model="basicValue" placeholder="Skriv noe her..." />
+          <p class="demo-result">Verdi: <strong>{{ basicValue }}</strong></p>
+        </div>
+
+        <div class="input-demo-item">
+          <label>2. Ikoner (Før og/eller etter)</label>
+          <BaseInput v-model="iconValue" placeholder="Brukernavn" iconBefore="👤" iconAfter="✓" />
+          <p class="demo-result">Verdi: <strong>{{ iconValue }}</strong></p>
+        </div>
+
+        <div class="input-demo-item">
+          <label>3. Prefix og Suffix</label>
+          <BaseInput v-model="prefixSuffixValue" placeholder="Beløp" prefix="kr" suffix=",00" />
+          <p class="demo-result">Verdi: <strong>{{ prefixSuffixValue }}</strong></p>
+        </div>
+
+        <div class="input-demo-item">
+          <label>4. Integrert knapp</label>
+          <BaseInput v-model="buttonValue" placeholder="Søk her" iconBefore="🔍" buttonLabel="Søk" @buttonClick="handleSearch" />
+          <p class="demo-result">Verdi: <strong>{{ buttonValue }}</strong></p>
+        </div>
+
+        <div class="input-demo-item">
+          <!-- Viser hvordan updateMode="lazy" fører til at oppdatering kun skjer når feltet mister fokus eller man trykker enter -->
+          <label>5. Lazy update</label>
+          <BaseInput v-model="lazyValue" placeholder="Oppdateres ved enter/klikk utenfor..." updateMode="lazy" />
+          <p class="demo-result">Verdi: <strong>{{ lazyValue }}</strong></p>
+        </div>
+
+        <div class="input-demo-item">
+          <!-- customClass viser CSS passthrough der en tilpasset stil (definert nederst i fila) brukes på den underliggende inputen -->
+          <label>6. CSS Passthrough</label>
+          <BaseInput v-model="customCssValue" placeholder=" Input" customClass="orange-input" iconBefore="✨" />
+          <p class="demo-result">Verdi: <strong>{{ customCssValue }}</strong></p>
+        </div>
+      </div>
     </section>
 
-    <!--Dataview komponent-->
+    <!-- 
+      Test-seksjon for DataView-komponenten.
+      Sender inn DummyData, en custom-class for radene, og fanger opp eventuelle redigerings- og slettekall
+    -->
     <section class="demo-section">
-      <h2>Data view test</h2>
+      <div class="section-header">
+        <h2>Data View</h2>
+        <p>Visning av data i grid- eller tabellformat med søk, sortering og valg.</p>
+      </div>
 
       <DataView :items="items" itemClass="custom-item" @edit="handleEdit" @delete="handleDelete" />
     </section>
   </main>
 </template>
 
-<style>
+<style scoped>
 main {
   max-width: 1000px;
   margin: 0 auto;
   padding: 2rem;
   font-family: Arial, sans-serif;
+  color: #333;
 }
 
-.intro {
-  color: #4b5563;
+.page-header {
   margin-bottom: 2rem;
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 1rem;
+}
+
+.page-header h1 {
+  margin: 0 0 0.5rem 0;
+}
+
+.page-description {
+  margin: 0;
+  color: #666;
 }
 
 .demo-section {
-  background: white;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
+  border: 1px solid #ccc;
   padding: 1.5rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: 2rem;
+  background: #fafafa;
+}
+
+.section-header {
+  margin-bottom: 1rem;
+}
+
+.section-header h2 {
+  margin: 0 0 5px 0;
+}
+
+.section-header p {
+  margin: 0;
+  color: #666;
+  font-size: 14px;
 }
 
 .button-group {
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
-  margin-top: 1rem;
 }
 
-.input-group {
+.input-demo-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.input-demo-item {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  margin-top: 1rem;
+  gap: 0.5rem;
+  background: #fff;
+  padding: 1rem;
+  border: 1px solid #ddd;
 }
 
-.big-button {
-  background-color: chocolate;
-  font-size: 18px;
-  padding: 12px 22px;
-  border-radius: 10px;
+.input-demo-item label {
+  font-weight: bold;
+  font-size: 14px;
+  color: #333;
+}
+
+.demo-result {
+  margin: 0;
+  font-size: 14px;
+  color: green;
+}
+
+.orange-input {
+  border: 2px solid orange;
+  background-color: #fffaf0;
+  color: #b76c00;
+}
+
+.orange-button {
+  background-color: orange;
+  color: white;
+  font-size: 16px;
+  padding: 10px 20px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+}
+
+.orange-button:hover {
+  background-color: darkorange;
 }
 
 .custom-item {
-  border: 2px solid #e2d7c4;
+  border: 4px solid orange;
+  background-color: #fff8f0;
 }
 </style>
