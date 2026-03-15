@@ -271,10 +271,17 @@ function selectNone() {
 
 .data-card-image {
   width: 100%;
-  height: 140px;
+  height: 160px;
   object-fit: cover;
+  object-position: center top;
   border-radius: 8px;
   margin: 0.5rem 0 0.75rem;
+}
+
+@media (max-width: 600px) {
+  .data-card-image {
+    height: 130px;
+  }
 }
 
 .data-card h3 {
@@ -317,6 +324,7 @@ function selectNone() {
   width: 70px;
   height: 50px;
   object-fit: cover;
+  object-position: center top;
   border-radius: 6px;
 }
 
