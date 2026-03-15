@@ -14,10 +14,12 @@ function clickTest() {
       <h2>Button test</h2>
 
       <div class="button-group">
-        <BaseButton label="Primary" @click="clickTest" />
-        <BaseButton label="Secondary" variant="secondary" />
-        <BaseButton label="Delete" variant="danger" iconBefore="🗑" />
-        <BaseButton label="VG" href="https://vg.no" iconAfter="↗" />
+        <BaseButton label="Lagre" @click="clickTest" />
+        <BaseButton label="Avbryt" variant="secondary" />
+        <BaseButton label="Slett" variant="danger" iconBefore="🗑" />
+        <BaseButton label="BK" href="https://bk.no/tjenestekategorier/teknologi" iconAfter="↗" />
+        <BaseButton label="Deaktivert" disabled />
+        <BaseButton label="Egendefinert stil" customClass="big-button" />
       </div>
     </section>
   </main>
@@ -48,5 +50,12 @@ main {
   flex-wrap: wrap;
   gap: 1rem;
   margin-top: 1rem;
+}
+
+.big-button {
+  background-color: chocolate;
+  font-size: 18px;
+  padding: 12px 22px;
+  border-radius: 10px;
 }
 </style>

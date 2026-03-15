@@ -2,7 +2,7 @@
 // Mulige stilvarianter for knappen.
 type Variant = 'default' | 'secondary' | 'danger';
 
-defineProps({
+const props = defineProps({
   label: String,
 
   // Bestemmer visuell variant av knappen.
@@ -18,12 +18,24 @@ defineProps({
   // Valgfrie ikoner før eller etter teksten.
   iconBefore: String,
   iconAfter: String,
+
+  // Deaktiverer knappen og hindrer interaksjon
+  disabled: Boolean,
+
+  // Gir mulighet for ekstra styling fra parent-komponenten.
+  // Vue støtter normalt class direkte på komponenter, men denne
+  // prop-en gjør CSS passthrough eksplisitt i API-et.
+  customClass: String,
 });
 
 // Sender klikk-event videre til parent-komponenten.
 const emit = defineEmits(['click']);
 
 function handleClick(event: MouseEvent) {
+  if (props.disabled) {
+    event.preventDefault();
+    return;
+  }
   emit('click', event);
 }
 </script>
@@ -32,7 +44,13 @@ function handleClick(event: MouseEvent) {
   <!--
     Vanlig knapp brukes når komponenten representerer en handling.
   -->
-  <button v-if="!href" :class="['button', 'button-' + variant]" @click="handleClick">
+  <button
+    v-if="!href"
+    type="button"
+    :disabled="disabled"
+    :class="['button', 'button-' + variant, { 'button-disabled': disabled }, customClass]"
+    @click="handleClick"
+  >
     <span v-if="iconBefore">{{ iconBefore }}</span>
 
     <span v-if="label">
@@ -46,7 +64,12 @@ function handleClick(event: MouseEvent) {
     Hvis href er oppgitt brukes en anchor slik at komponenten
     også kan fungere som navigasjonslenke.
   -->
-  <a v-else :href="href" :class="['button', 'button-' + variant]">
+  <a
+    v-else
+    :href="disabled ? undefined : href"
+    :class="['button', 'button-' + variant, { 'button-disabled': disabled }, customClass]"
+    @click="handleClick"
+  >
     <span v-if="iconBefore">{{ iconBefore }}</span>
 
     <span v-if="label">
@@ -70,16 +93,17 @@ function handleClick(event: MouseEvent) {
   font-weight: 500;
   cursor: pointer;
   text-decoration: none;
+  transition: background 0.15s ease;
 }
 
 /* Standard  */
 .button-default {
-  background: #1f2937;
+  background: #2563eb;
   color: white;
 }
 
 .button-default:hover {
-  background: #111827;
+  background: #1d4ed8;
 }
 
 /* Sekundær */
@@ -101,5 +125,10 @@ function handleClick(event: MouseEvent) {
 
 .button-danger:hover {
   background: #991b1b;
+}
+/* Disabled */
+.button-disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 </style>
